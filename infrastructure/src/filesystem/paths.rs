@@ -1,6 +1,7 @@
 use directories::ProjectDirs;
 use std::fs;
 use std::path::PathBuf;
+use tracing::info;
 
 use crate::config::Config;
 use crate::filesystem::error::PathsError;
@@ -32,6 +33,8 @@ impl Paths {
         let config = root.join("config.json");
         let logs = root.join("logs");
 
+        info!("Creating FlowPilot directories");
+
         fs::create_dir_all(&root).map_err(|_| PathsError::RootDirectoryCreationFailed)?;
         fs::create_dir_all(&logs).map_err(|_| PathsError::RootDirectoryCreationFailed)?;
 
@@ -51,12 +54,15 @@ impl Paths {
             return Err(PathsError::ConfigNotFound);
         }
 
+        info!("Loading FlowPilot configuration");
         let content = fs::read_to_string(&self.config).map_err(|_| PathsError::ConfigReadFailed)?;
 
         serde_json::from_str(&content).map_err(|_| PathsError::InvalidConfig)
     }
 
     pub fn save_config(&self, config: &Config) -> Result<(), PathsError> {
+        info!("Saving FlowPilot configuration");
+
         let content = serde_json::to_string_pretty(config)
             .map_err(|_| PathsError::ConfigSerializationFailed)?;
 
@@ -70,6 +76,7 @@ impl Paths {
             return Err(PathsError::ConfigNotFound);
         }
 
+        info!("Deleting FlowPilot configuration");
         fs::remove_file(&self.config).map_err(|_| PathsError::ConfigDeleteFailed)?;
 
         Ok(())
@@ -80,6 +87,7 @@ impl Paths {
             return Err(PathsError::ProjectDirsNotFound);
         }
 
+        info!("Deleting FlowPilot root directory");
         fs::remove_dir_all(&self.root).map_err(|_| PathsError::RootDirectoryDeletionFailed)?;
 
         Ok(())

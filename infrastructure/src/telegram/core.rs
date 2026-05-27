@@ -2,36 +2,35 @@ use teloxide::prelude::*;
 use teloxide::repl;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::oneshot::{self, Sender as OneshotSender};
+use tracing::{info, warn};
 
 pub async fn register_allowed_users(
     token: impl Into<String>,
     tx: Sender<(ChatId, OneshotSender<bool>)>,
 ) -> ResponseResult<()> {
     let bot = Bot::new(token.into());
+    info!("Telegram registration listener started");
 
-    repl(bot.clone(), move |bot: Bot, msg: Message| {
+    repl(bot, move |bot: Bot, msg: Message| {
         let tx = tx.clone();
 
         async move {
+            info!("Received registration message from {}", msg.chat.id);
             let (response_tx, response_rx) = oneshot::channel();
-            tx.send((msg.chat.id, response_tx)).await.ok();
 
-            match response_rx.await {
-                Ok(true) => {
-                    bot.send_message(msg.chat.id, "✅ You have been added to FlowPilot.")
-                        .await
-                        .ok();
-                }
-                Ok(false) => {
-                    bot.send_message(msg.chat.id, "⚠️ You are already registered.")
-                        .await
-                        .ok();
-                }
-                Err(_) => {
-                    bot.send_message(msg.chat.id, "❌ Internal error.")
-                        .await
-                        .ok();
-                }
+            if tx.send((msg.chat.id, response_tx)).await.is_err() {
+                warn!("Registration channel closed");
+                return respond(());
+            }
+
+            let message = match response_rx.await {
+                Ok(true) => "✅ You have been added to FlowPilot.",
+                Ok(false) => "⚠️ You are already registered.",
+                Err(_) => "❌ Internal error.",
+            };
+
+            if bot.send_message(msg.chat.id, message).await.is_err() {
+                warn!("Failed to send Telegram response to {}", msg.chat.id);
             }
 
             respond(())
