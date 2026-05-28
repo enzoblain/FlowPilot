@@ -1,10 +1,11 @@
+use std::sync::Arc;
 use tokio::spawn;
-use tokio::sync::mpsc;
+use tokio::sync::{Notify, mpsc};
 use tracing::info;
 
 use crate::cli::DeleteTarget;
 use crate::error::AppError;
-use infrastructure::config::Config;
+use infrastructure::config::{AddUserResult, Config};
 use infrastructure::filesystem::Paths;
 use infrastructure::telegram::register_allowed_users;
 
@@ -50,21 +51,23 @@ pub(crate) async fn add_user(paths: &Paths, count: usize) -> Result<(), AppError
     info!("Waiting for {} Telegram user(s)", count);
 
     let mut added_count = 0;
-
     while added_count < count {
-        let (chat_id, response_tx) = rx.recv().await.ok_or(AppError::RegistrationChannelClosed)?;
-        let added = config.add_allowed_chat_id(chat_id);
+        let sent_notify = Arc::new(Notify::new());
+        let (name, chat_id, response_tx) =
+            rx.recv().await.ok_or(AppError::RegistrationChannelClosed)?;
 
-        if added {
+        let result = config.add_allowed_chat_id(&name, chat_id);
+        if matches!(result, AddUserResult::Added) {
             added_count += 1;
-
-            info!("Added user {} ({}/{})", chat_id, added_count, count);
+            info!("Added user '{}' ({}/{})", name, added_count, count);
             paths.save_config(&config)?;
         }
 
         response_tx
-            .send(added)
+            .send((result, sent_notify.clone()))
             .map_err(|_| AppError::RegistrationResponseSendFailed)?;
+
+        sent_notify.notified().await;
     }
 
     handle.abort();
