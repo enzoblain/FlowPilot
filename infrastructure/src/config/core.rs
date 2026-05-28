@@ -7,7 +7,7 @@ use crate::telegram::ChatId;
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Config {
     telegram_token: String,
-    allowed_chat_ids: HashMap<String, ChatId>,
+    allowed_users: HashMap<ChatId, String>,
 }
 
 impl Config {
@@ -16,7 +16,11 @@ impl Config {
     }
 
     pub fn allowed_chat_ids(&self) -> Vec<ChatId> {
-        self.allowed_chat_ids.values().cloned().collect()
+        self.allowed_users.keys().cloned().collect()
+    }
+
+    pub fn allowed_users(&self) -> &HashMap<ChatId, String> {
+        &self.allowed_users
     }
 
     pub fn set_telegram_token(&mut self, token: impl Into<String>) {
@@ -32,40 +36,40 @@ impl Config {
             return AddUserResult::ChatIdAlreadyExists;
         }
 
-        self.allowed_chat_ids.insert(name.to_owned(), id);
+        self.allowed_users.insert(id, name.to_owned());
 
         AddUserResult::Added
     }
 
     pub fn remove_allowed_name(&mut self, name: &str) -> RemoveUserResult {
-        if self.allowed_chat_ids.remove(name).is_some() {
-            RemoveUserResult::Removed
-        } else {
-            RemoveUserResult::NotFound
-        }
-    }
-
-    pub fn remove_allowed_chat_id(&mut self, id: ChatId) -> RemoveUserResult {
-        let key = self
-            .allowed_chat_ids
+        let chat_id = self
+            .allowed_users
             .iter()
-            .find(|(_, value)| **value == id)
-            .map(|(key, _)| key.clone());
+            .find(|(_, value)| value.as_str() == name)
+            .map(|(key, _)| *key);
 
-        match key {
-            Some(key) => {
-                self.allowed_chat_ids.remove(&key);
+        match chat_id {
+            Some(chat_id) => {
+                self.allowed_users.remove(&chat_id);
                 RemoveUserResult::Removed
             }
             None => RemoveUserResult::NotFound,
         }
     }
 
+    pub fn remove_allowed_chat_id(&mut self, id: ChatId) -> RemoveUserResult {
+        if self.allowed_users.remove(&id).is_some() {
+            RemoveUserResult::Removed
+        } else {
+            RemoveUserResult::NotFound
+        }
+    }
+
     pub fn is_allowed_chat_id(&self, id: ChatId) -> bool {
-        self.allowed_chat_ids().contains(&id)
+        self.allowed_users.contains_key(&id)
     }
 
     pub fn is_allowed_name(&self, name: &str) -> bool {
-        self.allowed_chat_ids.contains_key(name)
+        self.allowed_users.values().any(|value| value == name)
     }
 }
