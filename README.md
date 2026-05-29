@@ -1,80 +1,108 @@
-# FlowPilot
+# Nexus
+
+> A self-hosted personal hub combining local AI, knowledge management, system monitoring and multi-device sync — all in
+> one cohesive app.
+
+![Status](https://img.shields.io/badge/status-early%20development-orange)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS-blue)
+![Deployment](https://img.shields.io/badge/deployment-self--hosted-teal)
+![AI](https://img.shields.io/badge/AI-local%20only-teal)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+---
+
+## Overview
+
+Nexus is a multiplatform application built for macOS and iOS that centralizes personal tools around a self-hosted
+infrastructure.
+
+The application is designed to be simple to deploy: users only need to install the Nexus app on their devices. One
+device — typically a personal computer such as a Mac Studio — can be designated as the primary instance. This primary
+instance hosts the data, runs local AI models, exposes the API used by other devices, and provides its own user
+interface.
+
+Other devices running Nexus (Macs, iPhones, and potentially other platforms in the future) connect to the primary
+instance through the built-in communication layer. No manual server setup is required beyond selecting a primary
+instance.
+
+## Everything stays local, private, and fully under your control.
+
+## Architecture
 
 <p align="center">
-  AI-powered Telegram assistant for project management.
+  <img src="docs/architecture.svg" alt="Nexus architecture diagram" width="100%"/>
 </p>
 
-Create projects, share ideas, save notes, manage tasks, and interact with your entire project knowledge directly from Telegram.
-
-Powered by your own local LLM and connected to a local knowledge base, FlowPilot can understand your ideas, improve and reformulate them, organize information, and keep long-term project context.
-
-For example, you can:
-
-* Describe a rough idea and let FlowPilot refine it
-* Store concepts, features, and technical notes
-* Ask what feature or idea should be prioritized next
-* Retrieve past discussions or project knowledge instantly
-* Build a persistent second brain for your projects
-
-Everything stays local, private, and fully under your contro
 ---
 
 ## Features
 
-- 🧠 Store and retrieve project knowledge
-- 📌 Track project progress
-- 💡 Save ideas instantly
-- ✅ Manage tasks and notes
-- 💬 Interact with your projects in natural language
-- 🔒 Fully local AI workflow
-
----
-
-## Requirements
-
-FlowPilot requires a local LLM running on your machine.
-
-You can use tools such as:
-
-- Ollama
-- LM Studio
-- Any OpenAI-compatible local API
-
-The assistant communicates with your local AI model to keep your data private and fully under your control.
+- 💡 **Idea management** — Submit ideas from any device. A local AI model reformulates, structures and stores them in
+  your personal knowledge base.
+- 🍎 **Native Apple experience** — Install Nexus on macOS and iOS just like any other application. No dedicated server
+  software required.
+- 📊 **System monitoring** — Visualize logs, service states, host machine performance and system metrics in real time.
+- 📱 **Multi-device sync** — Access all features from any connected device through the main instance API.
+- 🧩 **Modular architecture** — New features plug in without touching the core. Extend Nexus as your needs grow.
+- 🔒 **Fully local AI** — All AI inference runs on your own hardware. No data leaves your machine.
 
 ---
 
 ## Tech Stack
 
-- Rust
-- Telegram Bot API
-- Local LLM integration
+- **Rust**
+- **Swift**
 
 ---
 
 ## Getting Started
 
-### Clone the repository
+🚧 Nexus is currently in early development.
 
-```
-git clone https://github.com/enzoblain/FlowPilot.git
-cd flowpilot
-```
+Installation packages and setup instructions will be available once the first public version is released.
 
-### Run the project
+### Planned Installation
 
-```
-cargo run -p app
-```
+1. Download Nexus on your Mac.
+2. Choose a device to become the Primary Instance.
+3. Install Nexus on your other devices.
+4. Connect them to your Primary Instance.
+5. Start using your personal AI-powered ecosystem.
 
----
+No complex server setup will be required.
 
 ## Vision
 
-FlowPilot aims to become a lightweight AI companion for software projects, helping developers centralize ideas, context, tasks, and knowledge without changing their workflow.
+Nexus aims to become the definitive self-hosted personal hub for individuals who want to centralize their digital life
+without relying on third-party cloud services.
+
+Unlike traditional self-hosted solutions that require managing multiple services, dashboards, and deployment tools,
+Nexus is designed to feel like a regular application. Simply install the app on your devices, choose a primary instance,
+and immediately access your personal ecosystem.
+
+The primary instance hosts your data, runs local AI models, provides monitoring capabilities, and acts as the central
+point for synchronization between devices. Every other device runs the same application and connects seamlessly to this
+instance through the built-in communication layer.
+
+By combining local AI, persistent knowledge management, system monitoring, and seamless multi-device access, Nexus gives
+you full ownership of your data and your tools while remaining simple to deploy and use.
+
+The long-term goal is to provide a modular platform where users can build their own personal ecosystem around a single
+application. Idea management is only one example: future modules could include automation, file management, AI
+assistants, personal analytics, development tools, and any other functionality that benefits from local AI and
+centralized data.
+
+Nexus is built around three core principles:
+
+- 🔒 **Ownership** — Your data stays on your hardware.
+- 🧠 **Intelligence** — Local AI enhances and organizes your information.
+- 🧩 **Extensibility** — New modules can be added without changing the core platform.
+
+The vision is simple: create a personal operating hub that is as easy to install as a consumer app, while providing the
+power, privacy, and flexibility of a fully self-hosted platform.
 
 ---
 
 ## Status
 
-🚧 Project currently in early development.
+🚧 **Early development** — core architecture in progress. Contributions and feedback welcome.

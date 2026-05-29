@@ -1,7 +1,5 @@
-/target
+target/
 **/*.rs.bk
-
-Cargo.lock
 
 .env
 .env.*
@@ -17,7 +15,26 @@ Thumbs.db
 tmp/
 temp/
 
-models/
-data/
+DerivedData/
+.build/
 
-config.local.toml
+.swiftpm/
+
+*.xcuserstate
+*.xcuserdatad/
+
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+*.swiftdeps
+
+*.dylib
+*.so
+*.a
+
+*.dSYM/
+
+coverage/
+*.profraw
+*.profdata
